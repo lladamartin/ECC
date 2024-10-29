@@ -14,7 +14,7 @@ output:
 
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "G:/.shortcut-targets-by-id/1VQsWu8tFyWkeO3ASvXq3GAtC-ARb18dM/ecc_base")
+knitr::opts_knit$set(root.dir = "C:/Users/user/Documents/GitHub/ECC")
 ```
 
 ## Inflation expectations indicator based on synthetic surveys
