@@ -1,0 +1,76 @@
+---
+title: "Listening to the price-setters: Inferring inflation expectations from synthetic surveys"
+author: "Daniel Aromí^[aromi.daniel@gmail.com], Paula Bonel^[mpaulabonel@gmail.com], Llada Martin^[lladamartin@gmail.com]"
+date:  "November, 2024"
+output:
+  #pdf_document:
+  #  toc: yes
+   # toc_depth: '3'
+  html_document:
+    theme: united
+    toc: yes
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "G:/.shortcut-targets-by-id/1VQsWu8tFyWkeO3ASvXq3GAtC-ARb18dM/ecc_base")
+```
+
+## Inflation expectations indicator based on synthetic surveys
+
+We propose a novel method to extract business inflation expectations via synthetic surveys completed by finetuned large language models (LLMs). The document could be download from [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4955056).
+
+```{r code1,include=F, warning=FALSE }
+#load libraries
+library(tidyverse)
+library(gt)
+library(gtExtras)
+```
+
+```{r code2,include=FALSE, warning=FALSE }
+# base surge de script "script_reg_plan.R" en ".\reuters\taller paper\ejercicio"
+df = read.csv("./reporte/dataset_report.csv")
+```
+
+
+```{r code3,include=F, warning=FALSE,echo=FALSE}
+#table gt 
+
+last_date_cpi <- df %>% 
+   slice(n()) %>% 
+  mutate(gcpi_annual = gcpi_annual*100) %>%
+  mutate(country='US',Last = gcpi_annual) %>%
+  select(country,Last)
+
+last_period_cpi <- df %>% 
+  filter(substr(date,1,4)=="2023") %>% 
+  mutate(gcpi_annual = gcpi_annual*100) %>%
+  summarise(Timeline = list(c(gcpi_annual)))%>%
+  mutate(country='US') %>%
+  select(country,Timeline)
+
+tabla_cpi = last_date_cpi  %>% 
+              left_join(last_period_cpi, by = 'country') %>% 
+              gt() %>% 
+              tab_header(
+                title = 'Annual inflation rate in the US'
+              ) %>% 
+               tab_caption("Monthly report") %>%
+              tab_footnote(footnote = md("Source: [St. Louis Fed](https://fred.stlouisfed.org/series/CPIAUCSL)")) %>%
+              cols_label(Last = 'Inflation rate (last)',
+                         Timeline = 'Period') %>%
+              fmt_number(columns = where(is.numeric), decimals = 2) %>%
+              gt_theme_538() %>% 
+              gt_plt_sparkline(
+                column = Timeline,
+                palette = c("grey40", "grey40", "grey40", "dodgerblue1", "grey40"),
+                fig_dim = c(5, 28)
+              ) %>%
+              cols_hide('country')
+
+
+```
+```{r code4,include=T, warning=FALSE,echo=FALSE}
+tabla_cpi
+```
