@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "C:/Users/user/Documents/GitHub/ECC")
 ```
 
+
 ## Inflation expectations indicator based on synthetic surveys
 Inflation dynamics are driven by the way in which a diverse set of economic agents
 perceive the economic environment. Estimations of these perceptions are key features in academic and policy analyses and, as a consequence, important resources have been devoted to improving these approximations.
