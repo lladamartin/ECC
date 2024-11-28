@@ -156,7 +156,7 @@ p_plotly <- ggplotly(p) %>%
 p_plotly
 ```
 
-An additional motivation for this project is to provide the community with the set of created indicators (downloadable [here]()). This database will be updated regularly. In the future, we also hope to provide the LLMs so that they can be used by the community.
+An Paula additional motivation for this project is to provide the community with the set of created indicators (downloadable [here]()). This database will be updated regularly. In the future, we also hope to provide the LLMs so that they can be used by the community.
 
 
 ## References
