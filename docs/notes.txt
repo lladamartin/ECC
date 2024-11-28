@@ -1,0 +1,13 @@
+github web
+crear un nuevo repositorio
+
+github desktop
+clonar el repositorio
+
+en ubicacion del proyecto C:\Users\user\Documents\GitHub\ECC, acomodar (el html debe quedar dentro de docs, para que el path funciones)
+
+commit y push
+
+url del html: structura fija (github extension + repositorio + html name)
+
+https://lladamartin.github.io/ECC/script_report.html
