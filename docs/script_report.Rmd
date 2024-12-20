@@ -1,34 +1,66 @@
 ---
-title: "Listening to the price-setters: Inferring inflation expectations from synthetic surveys"
-author: "Daniel Aromí^[IIEP UBA-Conicet, Facultad de Ciencias Económicas, Univ. de
-Buenos Aires. Facultad de Ciencias Económicas, UCA, Buenos Aires, Argentina. aromi.daniel@gmail.com], Paula Bonel^[IIEP UBA-Conicet, Facultad de Ciencias Económicas, Univ. de Buenos Aires. Facultad de Ciencias Económicas, UCA, Buenos Aires, Argentina. mpaulabonel@gmail.com], Llada Martin^[IIEP UBA-Conicet, Facultad de Ciencias Económicas, Univ. de Buenos Aires. lladamartin@gmail.com]"
-date:  "November, 2024"
+title: "New database: Business survey"
+author: 
+  - name: "Daniel Aromí"
+    affiliation: "IIEP (UBA-CONICET), Facultad de Ciencias Económicas, Univ. de Buenos Aires. Facultad de Ciencias Económicas, UCA, Buenos Aires, Argentina."
+    email: "aromi.daniel@gmail.com"
+  - name: "María Paula Bonel"
+    affiliation: "IIEP (UBA-CONICET), Facultad de Ciencias Económicas, Univ. de Buenos Aires. Facultad de Ciencias Económicas, UCA, Buenos Aires, Argentina."
+    email: "mpaulabone@gmail.com"
+  - name: "Llada Martín"
+    affiliation: "IIEP (UBA-CONICET), Facultad de Ciencias Económicas, Univ. de Buenos Aires."
+    email: "lladamartin@gmail.com"
+#date: "`r format(Sys.Date(), '%B, %Y')`"
 output:
-  #pdf_document:
-  #  toc: yes
-   # toc_depth: '3'
   html_document:
     theme: united
-    #toc: yes
+    #toc: true
     #toc_depth: 3
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
+Sys.setlocale("LC_TIME", "C")
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "C:/Users/user/Documents/GitHub/ECC")
 ```
 
-## Inflation expectations indicator based on synthetic surveys
-Inflation dynamics are driven by the way in which a diverse set of economic agents
-perceive the economic environment. Estimations of these perceptions are key features in academic and policy analyses and, as a consequence, important resources have been devoted to improving these approximations.
+## {.tabset}
 
-Prominent indicators of expected inflation are given by professional surveys, business surveys and market-based expectations. These indicators are shown to
-provide useful information (Berge, 2018; Candia, Coibion, & Gorodnichenko, 2023,
-2024; de Mendon¸ca, Garcia, & Vicente, 2021).
+### Introduction
 
-In this website, we propose a novel method to extract business inflation expectations via synthetic surveys completed by finetuned large language models (LLMs). The document could be download from [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4955056).
+Through this portal, we will share indicators based on earnings conference calls.
 
-Inflation has once again become a major concern for economic agents. The following table shows the latest numbers:
+On this first occasion, we are sharing the database linked to a recent academic work.
+
+In subsequent updates to this portal, we will not only update the database but also incorporate other applications.
+
+We also want to express our special thanks to Sebastian Manzi and Jeremias Schneider for their excellent collaboration as research assistants on this project. 
+
+### A specific application
+
+#### <span style="font-size: 24px; font-weight: bold; font-style: italic;">Listening to the price-setters: Inferring inflation expectations from synthetic surveys</span>
+
+##### <span style="font-size: 20px; font-weight: bold; font-style: italic;">Highlights</span>
+* **Novel Approach:** The paper introduces a method using fine-tuned LLMs to extract inflation expectations from earnings call transcripts, leveraging unstructured text data for richer insights.
+
+* **Methodology:** The process involves fine-tuning LLMs, generating inflation-related text completions, and transforming them into quantitative indicators using natural language inference.
+
+* **Complementary Insights:** Synthetic surveys provide unique insights into business inflation perceptions that are often undetectable by traditional indicators like inflation swaps or professional surveys.
+
+* **Better than NLP Basics:** The proposed approach surpasses traditional NLP techniques, such as bag-of-words or sentiment analysis, by capturing the nuanced context and deeper patterns in textual data.
+
+##### <span style="font-size: 20px; font-weight: bold; font-style: italic;">Abstract</span>
+We propose a novel method to extract business inflation expectations via synthetic surveys completed by finetuned large language models (LLMs). These models are trained in pseudo-realtime using earnings conference calls' transcripts. The analysis covers inflation in the US for the sample period 2011-2023. Synthetic surveys anticipate inflation over multiple forecast horizons. The proposed approach is shown to produce information that goes beyond that found in traditional business surveys and market-based indicators. The predictive performance of synthetic surveys cannot be matched applying conventional text processing techniques. Our results demonstrate the value of expanding the set of expectation metrics used in academic and policy analysis of inflation dynamics.
+
+##### <span style="font-size: 20px; font-weight: bold; font-style: italic;">Data</span>
+The paper could be download from [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4955056).
+
+The data could be download from [here](https://drive.google.com/file/d/1o5PcVU2VIKpo9d8snWZkIl-S5mRrNf3Q/view?usp=sharing).
+
+##### <span style="font-size: 20px; font-weight: bold; font-style: italic;">Monthly report</span>
+
+The following Table shows the latest numbers of our business inflation expectations via synthetic surveys completed by finetuned large language models (LLMs): 
+
 
 ```{r code1,include=F, warning=FALSE }
 #load libraries
@@ -37,40 +69,50 @@ library(gt)
 library(gtExtras)
 library(plotly)
 library(ggrepel)
+library(lubridate)
 ```
 
 ```{r code2,include=FALSE, warning=FALSE }
 # base surge de script "script_reg_plan.R" en ".\reuters\taller paper\ejercicio"
-df = read.csv("./docs/dataset_report.csv")
+dfa = read.csv("./docs/dataset_report.csv")
+dfa = as_tibble(dfa[,2:length(dfa)])
+
+# ss3
+dfb = read.csv("./docs/synthetic survey inflation.csv")
+dfb = as_tibble(dfb[,2:length(dfb)])
+dfb = dfb %>% mutate(date = paste(substr(date,1,4),substr(date,5,6),"01",sep="-"))
+
+df = dfa %>% left_join(dfb,by=c("date"))
 ```
 
 
 ```{r code3,include=F, warning=FALSE,echo=FALSE}
 #table gt 
 
-last_date_cpi <- df %>% 
+last_date_ss3 <- df %>% 
    slice(n()) %>% 
-  mutate(gcpi_annual = gcpi_annual*100) %>%
-  mutate(country='US',Last = gcpi_annual) %>%
+  mutate(sbs = index_ss3) %>%
+  mutate(country='US',Last = index_ss3) %>%
   select(country,Last)
 
-last_period_cpi <- df %>% 
-  filter(substr(date,1,4)=="2023") %>% 
-  mutate(gcpi_annual = gcpi_annual*100) %>%
-  summarise(Timeline = list(c(gcpi_annual)))%>%
+last_period_ss3 <- df %>% 
+  filter(as.Date(date) >= max(as.Date(date)) %m-% months(6)) %>% 
+  mutate(sbs = index_ss3) %>%
+  summarise(Timeline = list(c(index_ss3)))%>%
   mutate(country='US') %>%
   select(country,Timeline)
 
 
-tabla_cpi = last_date_cpi  %>% 
-              left_join(last_period_cpi, by = 'country') %>% 
+tabla_ss3 = last_date_ss3  %>% 
+              left_join(last_period_ss3, by = 'country') %>% 
               gt() %>% 
               tab_header(
-                title = 'Annual inflation rate in the US'
+                title =  md("Inflation expectations in the US<br>based on Synthetic business surveys (sbs)")
               ) %>% 
-               tab_caption("Monthly report") %>%
-              tab_footnote(footnote = md("Source: [St. Louis Fed](https://fred.stlouisfed.org/series/CPIAUCSL)")) %>%
-              cols_label(Last = 'Inflation rate (last)',
+               tab_caption(paste("Monthly report - ",format(Sys.Date(), "%B %Y"))) %>%
+              tab_footnote("Notes: Period contains the last 6 months") %>%
+                #footnote = md("Source: [St. Louis Fed](https://fred.stlouisfed.org/series/CPIAUCSL)")) %>%
+              cols_label(Last = paste0('sbs index (last - ',format(Sys.Date() %m-% months(1), "%B %Y"),')'),
                          Timeline = 'Period') %>%
               fmt_number(columns = where(is.numeric), decimals = 2) %>%
               gt_theme_538() %>% 
@@ -84,10 +126,10 @@ tabla_cpi = last_date_cpi  %>%
 
 ```
 ```{r code4,include=T, warning=FALSE,echo=FALSE}
-tabla_cpi
+tabla_ss3
 ```
 
-In the following figure, we show a strong association between inflation and synthetic business inflation expectations. A particularly noticeable feature is the increase in both indicators observed in 2021, which is later reversed by the end of the sample period. Consistently, the correlation coefficient between the time series is 0.55.
+In the following Figure, we show a strong association between inflation and synthetic business inflation expectations.
 
 ```{r code5,include=F, warning=FALSE,echo=FALSE}
 
@@ -156,15 +198,5 @@ p_plotly <- ggplotly(p) %>%
 p_plotly
 ```
 
-An Paula additional motivation for this project is to provide the community with the set of created indicators (downloadable [here]()). This database will be updated regularly. In the future, we also hope to provide the LLMs so that they can be used by the community.
 
 
-## References
-Berge, T.J. (2018). Understanding survey-based inflation expectations. International Journal of Forecasting, 34 (4), 788–801.
-
-Candia, B., Coibion, O., Gorodnichenko, Y. (2023). The macroeconomic expectations
-of firms. In handbook of economic expectations (p. 321-353). Academic Press.
-
-de Mendonça, H.F., Garcia, P.M., Vicente, J.V.M. (2021). Rationality and anchoring
-of inflation expectations: An assessment from survey-based and market-based
-measures. Journal of Forecasting, 40 (6), 1027–1053.
